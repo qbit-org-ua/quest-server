@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ stage.title }}</title>
+</head>
+<body>
+    <div style="margin: 0 auto; width: 90vw; padding-top: 20px;">
+        {{ stage.body }}
+        <form method="post">
+            <p> {{ error }} </p>
+            <label for="password">Пароль от этапа:</label>
+            <input id=password type="text" name="password"></input>
+            <button type="submit">Перейти к следующему этапу</button>
+        </form>
+    </div>
+</body>
+</html>
