@@ -37,15 +37,15 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
     stages = []
     for stage_id in range(1, number_of_quest_stages + 1):
         with open(os.path.join(project_folder, 'quest_stages', "{}.txt".format(stage_id))) as in_file:
+            stage_title = in_file.readline().strip()
             stage = {
-                'title': in_file.readline().strip(),
-                'body' : in_file.read()
+                'filename': "{}.txt".format(stage_id)
             }
         if random_keys:
             stage['key'] = random_word(length_of_keys)
         else:
-            stage['key'] = input("Enter key for quest stages {} ({}):\n".format(stage_id, stage['title']))
-        print("Stage number {} ({}) key: {}\n".format(stage_id, stage['title'], stage['key']))
+            stage['key'] = input("Enter key for quest stages {} ({}):\n".format(stage_id, stage_title))
+        print("Stage number {} ({}) key: {}\n".format(stage_id, stage_title, stage['key']))
         stages.append(stage)
 
     teams = []

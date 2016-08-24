@@ -16,8 +16,10 @@ def create_app():
     _app = Flask(__name__)
 
     project_folder = os.path.dirname(__file__)
-    hashes_map_file = open(os.path.join(project_folder, "hashes_map.json"))
-    _app.config['QUEST_STAGE_RELATIONS'] = json.loads(hashes_map_file.read())
+    with open(os.path.join(project_folder, "hashes_map.json")) as hashes_map_file:
+        _app.config['QUEST_STAGE_RELATIONS'] = json.loads(hashes_map_file.read())
+    _app.config['project_folder'] = project_folder
+    _app.config['quest_stages_folder'] = 'quest_stages'
     return _app
 
 app = create_app()  # pylint: disable=invalid-name
@@ -40,9 +42,16 @@ def stage(team_stage_hash):
     if team_stage_hash not in app.config['QUEST_STAGE_RELATIONS']:
         abort(403)
     team_stage = app.config['QUEST_STAGE_RELATIONS'][team_stage_hash]
-    template_kwargs = {
-        'stage': team_stage['stage'],
-    }
+    with open(os.path.join(app.config['project_folder'],
+                           app.config['quest_stages_folder'],
+                           team_stage['stage']['filename'])) as stage_file:
+        template_kwargs = {
+            'stage': {
+                'title': stage_file.readline().strip(),
+                'body': stage_file.read(),
+                'key': team_stage['stage']['key']
+            }
+        }
     if request.method == 'POST':
         if request.form.get('password') == team_stage['stage']['key']:
             return redirect('/' + team_stage['next_hash'])
