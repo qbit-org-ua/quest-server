@@ -2,7 +2,9 @@
 
 {% block title %}{{ stage.title }}{% endblock %}
 {% block body %}
-    {{ stage.body|safe }}
+    <div>
+        {% block stage_description %}{% endblock %}
+    </div>
     {% if stage.key %}
         <form method="post" class="form-horizontal">
             <div class="control-group{% if error %} error{% endif %}">

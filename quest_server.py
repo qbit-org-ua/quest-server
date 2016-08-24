@@ -18,8 +18,6 @@ def create_app():
     project_folder = os.path.dirname(__file__)
     with open(os.path.join(project_folder, "hashes_map.json")) as hashes_map_file:
         _app.config['QUEST_STAGE_RELATIONS'] = json.loads(hashes_map_file.read())
-    _app.config['project_folder'] = project_folder
-    _app.config['quest_stages_folder'] = 'quest_stages'
     return _app
 
 app = create_app()  # pylint: disable=invalid-name
@@ -42,21 +40,17 @@ def stage(team_stage_hash):
     if team_stage_hash not in app.config['QUEST_STAGE_RELATIONS']:
         abort(403)
     team_stage = app.config['QUEST_STAGE_RELATIONS'][team_stage_hash]
-    with open(os.path.join(app.config['project_folder'],
-                           app.config['quest_stages_folder'],
-                           team_stage['stage']['filename'])) as stage_file:
-        template_kwargs = {
-            'stage': {
-                'title': stage_file.readline().strip(),
-                'body': stage_file.read(),
-                'key': team_stage['stage'].get('key')
-            }
-        }
+    template_kwargs = {
+        'stage': team_stage['stage'],
+    }
     if request.method == 'POST':
         if request.form.get('password') == team_stage['stage']['key']:
             return redirect('/' + team_stage['next_hash'])
         template_kwargs['error'] = "Неправильный пароль"
-    return render_template("quest_stage.html", **template_kwargs)
+    return render_template(
+        "quest_stages/%s" % team_stage['stage']['template_name'],
+        **template_kwargs
+    )
 
 
 if __name__ == '__main__':
