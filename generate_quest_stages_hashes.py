@@ -12,6 +12,7 @@ and in file hashes.txt
 Script will ask about hashes which one to use:
 random one or get them from keyboard
 """
+import glob
 import json
 
 import os
@@ -36,11 +37,11 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
 
     stages = []
     for stage_id in range(1, number_of_quest_stages + 1):
-        with open(os.path.join(project_folder, 'quest_stages', "{}.txt".format(stage_id))) as in_file:
-            stage_title = in_file.readline().strip()
-            stage = {
-                'filename': "{}.txt".format(stage_id)
-            }
+        stage_file_name = glob.glob(os.path.join(project_folder, 'templates', 'quest_stages', "{}_*".format(stage_id)))[0]
+        stage_title = stage_file_name.split('_', 1)[1].split('.')[0]
+        stage = {
+            'template_name': stage_file_name.split('/')[-1]
+        }
         if random_keys:
             stage['key'] = random_word(length_of_keys)
         else:
@@ -80,13 +81,12 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
     loaded_file = False
     while not loaded_file:
         last_stage_file_name = input('Enter last stage file name (file should be inside quest_stages folder):\n')
-        try:
-            last_stage_file = open(os.path.join(project_folder, 'quest_stages', last_stage_file_name))
+        if os.path.exists(os.path.join(project_folder, 'templates', 'quest_stages', last_stage_file_name)):
             last_stage = {
-                'filename': last_stage_file_name
+                'template_name': last_stage_file_name
             }
             loaded_file = True
-        except FileNotFoundError:
+        else:
             print("File not found!\n")
             try_again_switch_character = input("Try again? (y/n)\n")
             if try_again_switch_character == 'n':
