@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}LOL quest{% endblock %}
+{% block title %}LOL КВЕСТ{% endblock %}
 {% block body %}
-    <p> {{ error }} </p>
-    <form method="post">
-        <label for="password">Пароль команды:</label>
-        <input id=password type="text" name="password"></input>
-        <button type="submit">Начать квест</button>
+    <form method="post" class="form-horizontal">
+        <div class="control-group{% if error %} error{% endif %}">
+            <label class="control-label" for="password">Пароль команды:</label>
+            <div class="controls">
+                <input id=password type="text" name="password"></input>
+                <span class="help-inline">{{ error }}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn btn-large btn-primary">Начать квест</button>
+            </div>
+        </div>
     </form>
 {% endblock %}
