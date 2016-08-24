@@ -49,7 +49,7 @@ def stage(team_stage_hash):
             'stage': {
                 'title': stage_file.readline().strip(),
                 'body': stage_file.read(),
-                'key': team_stage['stage']['key']
+                'key': team_stage['stage'].get('key')
             }
         }
     if request.method == 'POST':

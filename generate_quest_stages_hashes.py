@@ -83,8 +83,7 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
         try:
             last_stage_file = open(os.path.join(project_folder, 'quest_stages', last_stage_file_name))
             last_stage = {
-                'title': last_stage_file.readline().strip(),
-                'body': last_stage_file.read()
+                'filename': last_stage_file_name
             }
             loaded_file = True
         except FileNotFoundError:
