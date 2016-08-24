@@ -77,30 +77,28 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
         team['last_hash'] = prev_hash
         team_first_stage_id += 1
 
-    last_stage_switch_character = input('Add last stage, same for all teams? (y/n)\n')
-    if last_stage_switch_character == 'y':
-        loaded_file = False
-        while not loaded_file:
-            last_stage_file_name = input('Enter last stage file name (file should be inside quest_stages folder):\n')
-            try:
-                last_stage_file = open(os.path.join(project_folder, 'quest_stages', last_stage_file_name))
-                last_stage = {
-                    'title': last_stage_file.readline().strip(),
-                    'body': last_stage_file.read()
-                }
-                loaded_file = True
-            except FileNotFoundError:
-                print("File not found!\n")
-                try_again_switch_character = input("Try again? (y/n)\n")
-                if try_again_switch_character == 'n':
-                    return
+    loaded_file = False
+    while not loaded_file:
+        last_stage_file_name = input('Enter last stage file name (file should be inside quest_stages folder):\n')
+        try:
+            last_stage_file = open(os.path.join(project_folder, 'quest_stages', last_stage_file_name))
+            last_stage = {
+                'title': last_stage_file.readline().strip(),
+                'body': last_stage_file.read()
+            }
+            loaded_file = True
+        except FileNotFoundError:
+            print("File not found!\n")
+            try_again_switch_character = input("Try again? (y/n)\n")
+            if try_again_switch_character == 'n':
+                return
 
-        last_stage_hash = random_word(length_of_keys)
-        for team in teams:
-            quest_hashes_map[team['last_hash']]['next_hash'] = last_stage_hash
-        quest_hashes_map[last_stage_hash] = {
-            'stage': last_stage,
-        }
+    last_stage_hash = random_word(length_of_keys)
+    for team in teams:
+        quest_hashes_map[team['last_hash']]['next_hash'] = last_stage_hash
+    quest_hashes_map[last_stage_hash] = {
+        'stage': last_stage,
+    }
 
     with open(os.path.join(project_folder, 'hashes_map.json'), 'w') as hashes_map_file:
         hashes_map_file.write(json.dumps(quest_hashes_map))
