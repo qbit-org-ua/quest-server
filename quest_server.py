@@ -6,6 +6,7 @@ Quest Server
 
 This is an HTTP server for LOL Quests.
 """
+from datetime import datetime
 import json
 import os
 from flask import Flask, render_template, abort, request
@@ -45,6 +46,8 @@ def stage(team_stage_hash):
     }
     if request.method == 'POST':
         if request.form.get('password') == team_stage['stage']['key']:
+            with open('log.txt', "a") as log_file:
+                log_file.write("{}: {} -> {}\n".format(datetime.now(), team_stage_hash, team_stage['next_hash']))
             return redirect('/' + team_stage['next_hash'])
         template_kwargs['error'] = "Неправильный пароль"
     return render_template(
