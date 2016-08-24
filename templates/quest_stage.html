@@ -1,18 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ stage.title }}</title>
-</head>
-<body>
-    <div style="margin: 0 auto; width: 90vw; padding-top: 20px;">
-        {{ stage.body }}
-        <form method="post">
-            <p> {{ error }} </p>
-            <label for="password">Пароль от этапа:</label>
-            <input id=password type="text" name="password"></input>
-            <button type="submit">Перейти к следующему этапу</button>
+{% extends "base.html" %}
+
+{% block title %}{{ stage.title }}{% endblock %}
+{% block body %}
+    {{ stage.body|safe }}
+    {% if stage.key %}
+        <form method="post" class="form-horizontal">
+            <div class="control-group{% if error %} error{% endif %}">
+                <label class="control-label" for="password">Пароль от этапа:</label>
+                <div class="controls">
+                    <input id=password type="text" name="password"></input>
+                    <span class="help-inline">{{ error }}</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-large btn-primary">Перейти к следующему этапу</button>
+                </div>
+            </div>
         </form>
-    </div>
-</body>
-</html>
+    {% endif %}
+{% endblock %}

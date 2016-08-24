@@ -1,43 +1,54 @@
+# encoding: utf-8
+# pylint: disable=missing-docstring
+"""
+Quest Server
+============
+
+This is an HTTP server for LOL Quests.
+"""
 import json
 import os
 from flask import Flask, render_template, abort, request
 from flask import redirect
 
-app = Flask(__name__)
 
-project_folder = os.path.dirname(__file__)
+def create_app():
+    _app = Flask(__name__)
 
-hashes_map_file = open(os.path.join(project_folder, "hashes_map.json"))
-hashes_map = json.loads(hashes_map_file.read())
+    project_folder = os.path.dirname(__file__)
+    hashes_map_file = open(os.path.join(project_folder, "hashes_map.json"))
+    _app.config['QUEST_STAGE_RELATIONS'] = json.loads(hashes_map_file.read())
+    return _app
+
+app = create_app()  # pylint: disable=invalid-name
+
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
     error = ""
     if request.method == 'POST':
         first_stage_hash = request.form.get('password')
-        if not first_stage_hash in hashes_map:
+        if first_stage_hash not in app.config['QUEST_STAGE_RELATIONS']:
             error = "Неправильный пароль"
         else:
             return redirect('/' + request.form.get('password', ''))
     return render_template('home.html', error=error)
 
 
-@app.route('/<id_hash>', methods=['GET', 'POST'])
-def main(id_hash):
-    template_kwargs = {}
-    if request.method == 'GET':
-        try:
-            stage = hashes_map[id_hash]['stage']
-            template_kwargs['stage'] = stage
-        except KeyError:
-            abort(403)
-    else:
-        if id_hash in hashes_map and hashes_map[id_hash]['stage']['key'] == request.form.get('password'):
-            return redirect('/' + hashes_map[id_hash]['next_hash'])
-        template_kwargs['stage'] = hashes_map[id_hash]['stage']
+@app.route('/<team_stage_hash>', methods=['GET', 'POST'])
+def stage(team_stage_hash):
+    if team_stage_hash not in app.config['QUEST_STAGE_RELATIONS']:
+        abort(403)
+    team_stage = app.config['QUEST_STAGE_RELATIONS'][team_stage_hash]
+    template_kwargs = {
+        'stage': team_stage['stage'],
+    }
+    if request.method == 'POST':
+        if request.form.get('password') == team_stage['stage']['key']:
+            return redirect('/' + team_stage['next_hash'])
         template_kwargs['error'] = "Неправильный пароль"
     return render_template("quest_stage.html", **template_kwargs)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
