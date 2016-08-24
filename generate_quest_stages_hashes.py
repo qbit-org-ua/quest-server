@@ -20,7 +20,7 @@ import random
 project_folder = os.path.dirname(__file__)
 
 def random_word(length, allowed_characters="qwertyuiopasdfghjklzxcvbnm"):
-   return ''.join(random.choice(allowed_characters) for i in range(length))
+   return ''.join(random.choice(allowed_characters) for _ in range(length))
 
 def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
 
@@ -35,19 +35,18 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
         print("Unrecognised value, using self-writen keys")
 
     stages = []
-    with open(os.path.join(project_folder, "hashes.txt"), "w") as hashes_file:
-        for stage_id in range(1, number_of_quest_stages + 1):
-            with open(os.path.join(project_folder, 'quest_stages', "{}.txt".format(stage_id))) as in_file:
-                stage = {
-                    'title': in_file.readline().strip(),
-                    'body' : in_file.read()
-                }
-            if random_keys:
-                stage['key'] = random_word(length_of_keys)
-            else:
-                stage['key'] = input("Enter key for quest stages {} ({}):\n".format(stage_id, stage['title']))
-            print("Stage number {} ({}) key: {}\n".format(stage_id, stage['title'], stage['key']))
-            stages.append(stage)
+    for stage_id in range(1, number_of_quest_stages + 1):
+        with open(os.path.join(project_folder, 'quest_stages', "{}.txt".format(stage_id))) as in_file:
+            stage = {
+                'title': in_file.readline().strip(),
+                'body' : in_file.read()
+            }
+        if random_keys:
+            stage['key'] = random_word(length_of_keys)
+        else:
+            stage['key'] = input("Enter key for quest stages {} ({}):\n".format(stage_id, stage['title']))
+        print("Stage number {} ({}) key: {}\n".format(stage_id, stage['title'], stage['key']))
+        stages.append(stage)
 
     teams = []
     for team_id in range(1, number_of_teams + 1):
@@ -93,7 +92,7 @@ def gen_hashes(number_of_quest_stages=6, number_of_teams = 6, length_of_keys=8):
             except FileNotFoundError:
                 print("File not found!\n")
                 try_again_switch_character = input("Try again? (y/n)\n")
-                if (try_again_switch_character == 'n'):
+                if try_again_switch_character == 'n':
                     return
 
         last_stage_hash = random_word(length_of_keys)
